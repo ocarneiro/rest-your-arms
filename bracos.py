@@ -14,7 +14,7 @@ except:
     arduino_presente = False
 timestamp = None
 
-@route('/hello/<pos>')
+@route('/braco/<pos>')
 def index(pos):
     global timestamp
     if not timestamp:
