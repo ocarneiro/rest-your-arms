@@ -11,3 +11,5 @@ https://editor.p5js.org/ocarneiro/sketches/gTyXyAxfQ
 https://editor.p5js.org/codingtrain/sketches/Skd42hIy4
 
 https://storage.googleapis.com/tfjs-models/demos/posenet/camera.html
+
+https://github.com/oveddan/posenet-for-installations (para rodar offline)
