@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <script src="/vendors/tf.js"></script>
+    <script src="/vendors/posenet.js"></script>
+ </head>
+
+  <body>
+    <img id='foto' src='foto.jpg'/>
+  </body>
+  <!-- Place your code in the script tag below. You can also use an external .js file -->
+  <script>
+    
+    var imageScaleFactor = 0.5;
+    var outputStride = 16;
+    var flipHorizontal = false;
+
+    var imageElement = document.getElementById('foto');
+
+   
+    var config = {
+      architecture: 'MobileNetV1',
+      outputStride: 16,
+      inputResolution: 417, //  { width: 640, height: 480 },
+      multiplier: 0.75,
+      modelUrl: '/models/075/model-stride16.json'
+    };
+    
+    var net = posenet.load(config);
+
+    var pose = net.then(function(net){
+      return net.estimateSinglePose(imageElement, imageScaleFactor, flipHorizontal, outputStride);
+    });
+    
+    pose.then(function(pose){
+      console.log(pose);
+    });
+    
+
+  </script>
+</html>
