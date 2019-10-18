@@ -6,6 +6,8 @@ Interface rest para movimentar braços de robô usando inteligência artificial
 
 https://editor.p5js.org/ocarneiro/sketches/gTyXyAxfQ
 
+https://editor.p5js.org/ocarneiro/sketches/xSncWFkcg
+
 ## Inspirações
 
 https://editor.p5js.org/codingtrain/sketches/Skd42hIy4
