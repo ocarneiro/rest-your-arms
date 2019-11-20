@@ -11,6 +11,10 @@ let velX = 6;
 
 let confianca = 0;
 
+const diametroBola = 20;
+const alturaRaquete = 60;
+const larguraRaquete = 20;
+
 
 // carrega o modelo PoseNet
 async function loadMyModel() {
@@ -107,7 +111,7 @@ async function draw() {
   // desenha bola verde
   stroke(255, 255, 255); 
   fill(0, 255, 0);
-  ellipse(bola.x, bola.y, 20);
+  ellipse(bola.x, bola.y, diametroBola);
 
   // aplica velocidades à bola
   bola.y = bola.y + velY;
@@ -116,32 +120,20 @@ async function draw() {
   // desenha raquetes
   fill(0, 0, 255);
   stroke(255, 255, 255);
-  rect(maoEsquerda.x, maoEsquerda.y, 20, 60, 10);
-  rect(maoDireita.x, maoDireita.y, 20, 60, 10);
+  rect(maoEsquerda.x, maoEsquerda.y, larguraRaquete, alturaRaquete, 10);
+  rect(maoDireita.x, maoDireita.y, larguraRaquete, alturaRaquete, 10);
 
   // trata colisões
-  /*
-  if (bola.y > 460  &&
-       bola.x > xMaoDir  &&
-       bola.x < xMaoDir + 60) {
-    velY = -20;
-    if (bola.x > xMaoDir + 30) {
-      velX = 3;
-    } else {
-      velX = -3;
+  if (bola.x > maoDireita.x - diametroBola) {
+    if (bola.y > maoDireita.y && bola.y <= maoDireita.y + alturaRaquete) {
+      velX = -velX;
     }
   }
-  if (bola.y > 460  &&
-       bola.x > xMaoEsq  &&
-       bola.x < xMaoEsq + 60) {
-    velY = -20;
-    if (bola.x > xMaoEsq + 30) {
-      velX = 3;
-    } else {
-      velX = -3;
+  if (bola.x < maoEsquerda.x + larguraRaquete) {
+    if (bola.y > maoEsquerda.y && bola.y <= maoEsquerda.y + alturaRaquete) {
+      velX = -velX;
     }
   }
-  */
 
   // bola passando limite vertical
   if (bola.y > tamanho.y) {
