@@ -1,5 +1,5 @@
 let video;
-let poseNet;
+let model;
 let tamanho = {x: 640, y: 480}
 let ombroEsquerdo = {x: tamanho.x/2, y: tamanho.y/2};
 let maoEsquerda = {x: tamanho.x/2, y: tamanho.y/2};
@@ -13,14 +13,53 @@ let xMaoDir = 360;
 let velY = 5;
 let velX = 0;
 
- 
-function setup() {
+
+async function loadMyModel() {
+	
+	console.log("loadModel");
+
+    const config = {
+      architecture: 'MobileNetV1',
+      outputStride: 16,
+      inputResolution: 417, //  { width: 640, height: 480 },
+      multiplier: 0.75,
+      modelUrl: '/models/075/model-stride16.json'
+    };
+    
+	const net = await posenet.load(config); 
+	console.log("net dentro de loadModel");
+	console.log(typeof net);
+	
+    return net;
+}
+
+async function estimate(net, imageElement) {
+
+	var imageScaleFactor = 0.5;
+    var outputStride = 16;
+    var flipHorizontal = false;
+	
+	console.log("net dentro de estimate");
+	console.log(typeof net);
+	
+    const pose = await net.estimateSinglePose(imageElement, imageScaleFactor, flipHorizontal, outputStride);
+    
+    console.log(pose);
+}
+
+
+
+async function setup() {
+  console.log("setup");
   frameRate(10);
   createCanvas(tamanho.x, tamanho.y);
+  var canvas = document.getElementsByClassName("p5Canvas")[0];
   video = createCapture(VIDEO);
   video.hide();
-  poseNet = ml5.poseNet(video, modelReady);
-  poseNet.on('pose', gotPoses);
+  
+  model = await loadMyModel();
+  await estimate(model, canvas);
+  
 }
 
 function logNomesDasPartes(poses) {
@@ -75,7 +114,8 @@ function modelReady() {
   bola.y = 20;
 }
 
-function draw() {
+async function draw() {
+  await estimate(model, canvas);
   // desenha espelhando horizontalmente
   scale(-1,1);
   image(video, -tamanho.x, 0);
