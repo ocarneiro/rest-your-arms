@@ -2,12 +2,12 @@ let webcamvideo;
 let canvas;
 let model;
 const tamanho = {x: 640, y: 480}
-let maoEsquerda = {x: tamanho.x/2, y: tamanho.y/2};
-let maoDireita = {x: tamanho.x/2, y: tamanho.y/2};
+let maoEsquerda = {x: 30, y: tamanho.y/2};
+let maoDireita = {x: tamanho.x - 50, y: tamanho.y/2};
 let bola = {x: tamanho.x/2, y: 0};
 
-let velY = 3;
-let velX = 3;
+let velY = 6;
+let velX = 6;
 
 let confianca = 0;
 
@@ -24,7 +24,7 @@ async function loadMyModel() {
     };
     
 	const net = await posenet.load(config); 
-    return net;
+  return net;
 }
 
 // estima pose a partir de um modelo e uma imagem
@@ -35,14 +35,12 @@ async function estimate(net, imageElement) {
   const flipHorizontal = false;
 	
   const pose = await net.estimateSinglePose(imageElement, imageScaleFactor, flipHorizontal, outputStride);
-  // console.log(pose);
-
   return pose;
 }
 
 // função executada pelo p5.js inicialmente
 async function setup() {
-  frameRate(10);
+  frameRate(15);
   createCanvas(tamanho.x, tamanho.y);
   canvas = document.getElementsByClassName("p5Canvas")[0];
   canvas.width = tamanho.x;
@@ -54,16 +52,23 @@ async function setup() {
   await estimate(model, canvas);
 }
 
+function getPosicaoAtualEstimada(pose, chave) {
+  let x = pose.keypoints[chave].position.x;
+  let y = pose.keypoints[chave].position.y;
+  return {x: x, y: y};
+}
+
 // pose = objeto do PoseNet
 // chave = número do keypoint (ex: 0 = nariz)
 // ponto = array de duas posições (x e y) a ser alterado
 // suavizacao = grau de lerping
 function mudaPosicao(pose, chave, ponto, suavizacao) {
-    let x = pose.keypoints[chave].position.x;
-    let y = pose.keypoints[chave].position.y;
-    console.log(x, y);
-    ponto.x = lerp(ponto.x, x, suavizacao);
-    ponto.y = lerp(ponto.y, y, suavizacao);
+    let pontoEstimado = getPosicaoAtualEstimada(pose, chave);
+    ponto.x = lerp(ponto.x, pontoEstimado.x, suavizacao);
+    ponto.y = lerp(ponto.y, pontoEstimado.y, suavizacao);
+    if (ponto.y > tamanho.y - 30) {
+      ponto.y = tamanho.y - 30
+    }
     return ponto;
 }
 
@@ -71,18 +76,24 @@ function atualizaPosicoes(pose) {
   confianca = pose.score;
   // console.log(pose);
   if (pose.score > 0.3) {
-    maoEsquerda = mudaPosicao(pose, 9, maoEsquerda, 1.0);
-    maoDireita = mudaPosicao(pose, 10, maoDireita, 1.0);
+    let novaPosicaoEsquerda = getPosicaoAtualEstimada(pose, 9);
+    if (novaPosicaoEsquerda.x < tamanho.x / 2) {
+        maoEsquerda = mudaPosicao(pose, 9, maoEsquerda, 0.7);
+    }
+    let novaPosicaoDireita = getPosicaoAtualEstimada(pose, 10);
+    if (novaPosicaoDireita.x > tamanho.x / 2) {
+        maoDireita = mudaPosicao(pose, 10, maoDireita, 0.7);
+    }
   }
 }
 
 // função executada pelo p5.js a cada frame
 async function draw() {
 
-  // mostra vídeo espelhado horizontalmente
-  //    no tamanho do canvas
   scale(0.5);
 
+  // mostra vídeo espelhado horizontalmente
+  //    no tamanho do canvas
   scale(-1, 1);
   image(webcamvideo, -tamanho.x, 0);
   scale(-1, 1);
