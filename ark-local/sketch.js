@@ -16,8 +16,6 @@ let velX = 0;
 
 async function loadMyModel() {
 	
-	console.log("loadModel");
-
     const config = {
       architecture: 'MobileNetV1',
       outputStride: 16,
@@ -27,9 +25,6 @@ async function loadMyModel() {
     };
     
 	const net = await posenet.load(config); 
-	console.log("net dentro de loadModel");
-	console.log(typeof net);
-	
     return net;
 }
 
@@ -39,18 +34,11 @@ async function estimate(net, imageElement) {
     var outputStride = 16;
     var flipHorizontal = false;
 	
-	console.log("net dentro de estimate");
-	console.log(typeof net);
-	
     const pose = await net.estimateSinglePose(imageElement, imageScaleFactor, flipHorizontal, outputStride);
-    
     console.log(pose);
 }
 
-
-
 async function setup() {
-  console.log("setup");
   frameRate(10);
   createCanvas(tamanho.x, tamanho.y);
   var canvas = document.getElementsByClassName("p5Canvas")[0];
@@ -59,7 +47,6 @@ async function setup() {
   
   model = await loadMyModel();
   await estimate(model, canvas);
-  
 }
 
 function logNomesDasPartes(poses) {
