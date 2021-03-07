@@ -5,21 +5,24 @@ from bottle import route, run, template
 arduino_presente = True
 
 try:
-    board = Arduino('/dev/ttyUSB0')
-    servo1 = board.get_pin('d:9:s')
-    servo2 = board.get_pin('d:10:s')
+    # Tenta conexão com um Arduino que esteja usando o código StandardFirmata
+    board = Arduino('/dev/ttyACM0')   # define porta usada pelo Arduino
+    servo1 = board.get_pin('d:9:s')   # conecta servo no pino 9
+    servo2 = board.get_pin('d:10:s')  # conecta servo no pino 10
     servo1.write(90)
+    servo2.write(90)
+
 except:
     print("Iniciando sem um arduino")
     arduino_presente = False
-timestamp = None
+
+timestamp = time.time()
 
 @route('/braco/<pos>')
 def index(pos):
+    print("Recebi %s" % pos)
     global timestamp
-    if not timestamp:
-        timestamp = time.time()
-    elif time.time() - timestamp > 1:
+    if time.time() - timestamp > 10:
         if arduino_presente:
             servo1.write(int(pos))
         else:
