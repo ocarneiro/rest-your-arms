@@ -9,7 +9,16 @@ let maoDireita = {x: tamanho.x/2, y: tamanho.y/2};
  
 function setup() {
   createCanvas(tamanho.x, tamanho.y);
-  video = createCapture(VIDEO);
+  let constraints = {
+    video: {
+      mandatory: {
+        minWidth: tamanho.x,
+        minHeight: tamanho.y
+      }
+    },
+    audio: false
+  };
+  video = createCapture(constraints);
   video.hide();
   poseNet = ml5.poseNet(video, modelReady);
   poseNet.on('pose', gotPoses);
