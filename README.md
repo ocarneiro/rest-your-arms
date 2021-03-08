@@ -6,6 +6,7 @@ O propósito deste projeto é criar um robõ que imita os movimentos de uma pess
 
 No momento estão disponíveis as seguintes demonstrações:
 
+* [angulos](angulos): cálculo do ângulo formado entre o ombro e a mão direita, em graus, a partir da imagem da webcam.
 * [ark-local](ark-local): protótipo de game no estilo Arkanoid em que a posição dos pulsos da pessoa sendo filmada controlam as raquetes. Este exemplo usa um modelo de poses já treinado e disponível localmente (cerca de 5MB);
 * [ark-p5](ark-p5): protótipo como o ark-local, mas utilizando modelo obtido da internet, buscado automaticamente pela biblioteca ml5.js;
 * [arms-p5](arms-p5): desenha pontos e linhas como referência para controle de robô;
