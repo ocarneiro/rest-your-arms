@@ -11,6 +11,7 @@ No momento estão disponíveis as seguintes demonstrações:
 * [ark-p5](ark-p5): protótipo como o ark-local, mas utilizando modelo obtido da internet, buscado automaticamente pela biblioteca ml5.js;
 * [arms-p5](arms-p5): desenha pontos e linhas como referência para controle de robô;
 * [backend](backend): servidor python usando bottle e pyFirmata para controlar servo conectado a um Arduino;
+* [dois_angulos](dois_angulos): calcula ângulos formados entre cada ombro e a mão correspondente a partir de imagem da webcam.
 * [pong-local](pong-local): simulação do game Pong usando a posição das mãos para as raquetes. Usa um modelo posenet baixado localmente.
 * [posenet-local](posenet-local): implantação mínima da aplicação de um modelo local posenet.
 
