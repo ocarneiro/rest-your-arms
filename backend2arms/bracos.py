@@ -1,6 +1,6 @@
 from pyfirmata import Arduino
 import time
-from bottle import route, run, template, static_file
+from bottle import route, run, template, static_file, response
 
 arduino_presente = True
 POSICAO_INICIAL = 90
@@ -31,8 +31,9 @@ def posicionaServos(esquerda,direita):
         print("ServoDir: %d" % direita)
         print("ServoEsq: %d" % esquerda)
 
+@route('/static')
 @route('/static/<filename:path>')
-def send_static(filename):
+def send_static(filename="index.html"):
     return static_file(filename, root='./html')
 
 @route('/bracos/<pos>')
@@ -42,21 +43,21 @@ def index(pos):
     try:
         posEsq, posDir = int(pos1),int(pos2)
     except ValueError:
-        return template('''<b>Argumentos inválidos {{pos}}</b>!
-                           <p>Informe dois inteiros entre vírgulas<br>
-                           ex: http://servidor:porta/<b>12,95</b></p>''', pos=pos)
+        response.status = 400
+        return '''Argumentos inválidos: %s
+                  Informe dois inteiros entre vírgulas.
+                  ex: http://servidor:porta/12,95''' % pos
     global hora_ultima_execucao
     hora_atual = time.time()
     if hora_atual - hora_ultima_execucao > tempo_entre_execucoes:
         posicionaServos(posEsq,posDir)
         timestamp = time.time()
     else:
-        return template("Espere {{s}} segundos", s=int(tempo_entre_execucoes
-                                                       - (hora_atual
-                                                       - hora_ultima_execucao)
-                                                      )
-              )
-    return template('<b>Esquerda: {{posEsq}}, Direita:{{posDir}}</b>!', 
-                    posEsq=posEsq, posDir=posDir)
+        response.status = 202
+        return "Espere %d segundos" % int(tempo_entre_execucoes
+                                          - (hora_atual
+                                          - hora_ultima_execucao)
+                                          )
+    return {'esquerda': posEsq, 'direita': posDir}
 
 run(host='0.0.0.0', port=8080, reloader=True)
