@@ -44,25 +44,55 @@ function moveServo() {
   + anguloServoBracoDireito, onURLload); 
 }
 
+/**
+ * Define o ângulo a ser passado para o servo 
+ * a partir o braço esquerdo da pessoa.
+ */
 function anguloServoFromBracoEsquerdo(anguloBraco) {
   MINIMO_BRACO = 90;
   MINIMO_SERVO = 15;
   MAXIMO_BRACO = 180;
-  MAXIMO_SERVO = 175;
+  MAXIMO_SERVO = 90;
   
   anguloServo = 90;
-  if (anguloBraco<0) anguloServo = 175;
-  if (anguloBraco < 181 && anguloBraco > 90) {
+  if (anguloBraco > 0 && anguloBraco <= 90) {
+    anguloServo = MINIMO_SERVO; // posicao mais alta
+  } else if (anguloBraco >= MINIMO_BRACO && anguloBraco <= MAXIMO_BRACO) {
     novoAngulo = anguloBraco - MINIMO_BRACO;
     novoMaximo = MAXIMO_BRACO - MINIMO_BRACO;
     indiceNovoAngulo = novoAngulo / novoMaximo;
     escalaDestino = MAXIMO_SERVO - MINIMO_SERVO;
     novoAngulo = indiceNovoAngulo * escalaDestino + MINIMO_SERVO;
     anguloServo = novoAngulo;
+  // o braço fica com ângulo negativo quando a mão esquerda
+  // está abaixo da linha do ombro (-180 a -90 graus)
+  } else if (anguloBraco < 0) {
+    MINIMO_BRACO = -180;
+    MAXIMO_BRACO = -90;
+    MINIMO_SERVO = 90;
+    MAXIMO_SERVO = 175;
+    // se mão estiver cruzando a frente do corpo,
+    // a posição do servo é a mais baixa
+    anguloServo = 90;
+    if (anguloBraco > -90) {
+      anguloServo = MAXIMO_SERVO;
+    // entre -90 e -180
+    } else {
+        novoAngulo = anguloBraco - MINIMO_BRACO;
+        novoMaximo = MAXIMO_BRACO - MINIMO_BRACO;
+        indiceNovoAngulo = novoAngulo / novoMaximo;
+        escalaDestino = MAXIMO_SERVO - MINIMO_SERVO;
+        novoAngulo = indiceNovoAngulo * escalaDestino + MINIMO_SERVO;
+        anguloServo = novoAngulo;      
+    }
   }
   return Math.trunc(anguloServo);
 }
 
+/**
+ * Define o ângulo a ser passado para o servo 
+ * a partir o braço direito da pessoa.
+ */
 function anguloServoFromBracoDireito(anguloBraco) {
   MINIMO_BRACO = -90;
   MINIMO_SERVO = 15;
@@ -101,10 +131,10 @@ function mudaPosicao(poses, chave, ponto, suavizacao) {
 function gotPoses(poses) {
   // console.log(poses);
   if (poses.length > 0) {
-    ombroEsquerdo = mudaPosicao(poses, 5, ombroEsquerdo, 0.5);
-    maoEsquerda = mudaPosicao(poses, 9, maoEsquerda, 0.3);
-    ombroDireito = mudaPosicao(poses, 6, ombroDireito, 0.5);
-    maoDireita = mudaPosicao(poses, 10, maoDireita, 0.3);
+    ombroEsquerdo = mudaPosicao(poses, 5, ombroEsquerdo, 0.8);
+    maoEsquerda = mudaPosicao(poses, 9, maoEsquerda, 0.6);
+    ombroDireito = mudaPosicao(poses, 6, ombroDireito, 0.8);
+    maoDireita = mudaPosicao(poses, 10, maoDireita, 0.6);
     
   }
 }
