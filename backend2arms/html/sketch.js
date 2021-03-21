@@ -8,9 +8,14 @@ let maoDireita = {x: tamanho.x/2, y: tamanho.y/2};
 let anguloDireito;
 let anguloEsquerdo;
 let loadedJSON = null;
+let ligado = false;
+
+let frameAtual = 0;
+let frameAcao = 5;
  
 function setup() {
   createCanvas(tamanho.x, tamanho.y);
+  frameRate(10); 
   let constraints = {
     video: {
       mandatory: {
@@ -28,10 +33,10 @@ function setup() {
 }
 
 function moveServo() {
-  console.log("Braço esquerdo: " + anguloEsquerdo);
+  // console.log("Braço esquerdo: " + anguloEsquerdo);
   anguloServoBracoDireito = anguloServoFromBracoEsquerdo(anguloEsquerdo);
   anguloServoBracoEsquerdo = anguloServoFromBracoDireito(anguloDireito);
-  console.log("Vou enviar: " + anguloServoBracoEsquerdo);
+  // console.log("Vou enviar: " + anguloServoBracoEsquerdo);
   loadedJSON = loadJSON(
 "http://localhost:8080/bracos/" 
   + anguloServoBracoEsquerdo
@@ -126,9 +131,52 @@ function draw() {
   text(anguloDireito + "º",tamanho.x - 160, 75);
   text(anguloEsquerdo + "º", 100, 75);
 
-  button = createButton('Vai!!');
-  button.position(300, 65);
-  button.mousePressed(moveServo);
+  desenhaBolas();
+  desenhaLigado();
+
+}
+
+function ligaDesliga() {
+  ligado = ! ligado;
+}
+
+function desenhaLigado() {
+  stroke(255, 255, 255); // cor da linha
+  strokeWeight(4); // espessura
+  if (ligado) {
+    fill(255, 0, 0);
+  } else {
+    fill(0, 255, 0);
+  }
+  ellipse(tamanho.x-70, tamanho.y-120, 60);  
+  button = createButton('Power');
+  button.position(tamanho.x-97, tamanho.y-130);
+  button.mousePressed(ligaDesliga);
+}
+
+function desenhaBolas() {
+  
+  frameAtual = frameAtual + 1;
+  espacamento = Math.trunc(tamanho.x / (frameAcao+1));
+  for (var i = 1; i <= frameAcao; i++){
+    if (i == frameAtual) {
+      stroke(255, 255, 255); // cor da linha
+      strokeWeight(1); // espessura
+      fill(255, 0, 0);
+    } else {
+      stroke(255, 255, 255); // cor da linha
+      strokeWeight(1); // espessura
+      fill(0, 255, 0);
+    }
+    ellipse(i*espacamento, tamanho.y-30, 10);   
+  }
+  if (frameAtual >= frameAcao) {
+    // console.log("Vai!");
+    if (ligado) {
+      moveServo();
+    }
+    frameAtual = 0;
+  }
 }
 
 function calculaAngulo(ombro, mao) {
