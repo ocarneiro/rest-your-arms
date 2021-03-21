@@ -28,36 +28,34 @@ function setup() {
 }
 
 function moveServo() {
-  console.log("Esquerda: " + anguloEsquerdo);
+  console.log("Braço esquerdo: " + anguloEsquerdo);
+  anguloServoBracoDireito = anguloServoFromAnguloBraco(anguloEsquerdo);
+  console.log("Vou enviar: " + anguloServoBracoDireito);
   loadedJSON = loadJSON(
-"http://localhost:8080/bracos/60,60", onURLload); 
-} 
-
-function onURLload() {
-  console.log("Peguei: " + loadedJSON);
+"http://localhost:8080/bracos/60," + anguloServoBracoDireito, onURLload); 
 }
 
-function logNomesDasPartes(poses) {
-    for (var i = 0; i <= 16; i++){
-      console.log(i + " = " + poses[0].pose.keypoints[i].part);
-//  0 = nose
-//  1 = leftEye
-//  2 = rightEye
-//  3 = leftEar
-//  4 = rightEar
-//  5 = leftShoulder
-//  6 = rightShoulder
-//  7 = leftElbow
-//  8 = rightElbow
-//  9 = leftWrist
-// 10 = rightWrist
-// 11 = leftHip
-// 12 = rightHip
-// 13 = leftKnee
-// 14 = rightKnee
-// 15 = leftAnkle
-// 16 = rightAnkle  
-    } 
+function anguloServoFromAnguloBraco(anguloBraco) {
+  MINIMO_BRACO = 90;
+  MINIMO_SERVO = 15;
+  MAXIMO_BRACO = 180;
+  MAXIMO_SERVO = 175;
+  
+  anguloServo = 90;
+  if (anguloBraco<0) anguloServo = 175;
+  if (anguloBraco < 181 && anguloBraco > 90) {
+    novoAngulo = anguloBraco - MINIMO_BRACO;
+    novoMaximo = MAXIMO_BRACO - MINIMO_BRACO;
+    indiceNovoAngulo = novoAngulo / novoMaximo;
+    escalaDestino = MAXIMO_SERVO - MINIMO_SERVO;
+    novoAngulo = indiceNovoAngulo * escalaDestino + MINIMO_SERVO;
+    anguloServo = novoAngulo;
+  }
+  return Math.trunc(anguloServo);
+}
+
+function onURLload() {
+  console.log("Peguei: " + JSON.stringify(loadedJSON));
 }
 
 // poses = objeto do PoseNet
@@ -84,7 +82,7 @@ function gotPoses(poses) {
 }
 
 function modelReady() {
-  console.log('model ready');
+  console.log('modelo pronto');
 }
 
 // função executada a cada frame
@@ -130,4 +128,27 @@ function desenhaOmbroMao(ombro, mao) {
   ellipse(ombro.x-tamanho.x, ombro.y, 10); 
   fill(0, 255, 0);
   ellipse(mao.x-tamanho.x, mao.y, 10);  
+}
+
+function logNomesDasPartes(poses) {
+    for (var i = 0; i <= 16; i++){
+      console.log(i + " = " + poses[0].pose.keypoints[i].part);
+//  0 = nose
+//  1 = leftEye
+//  2 = rightEye
+//  3 = leftEar
+//  4 = rightEar
+//  5 = leftShoulder
+//  6 = rightShoulder
+//  7 = leftElbow
+//  8 = rightElbow
+//  9 = leftWrist
+// 10 = rightWrist
+// 11 = leftHip
+// 12 = rightHip
+// 13 = leftKnee
+// 14 = rightKnee
+// 15 = leftAnkle
+// 16 = rightAnkle  
+    } 
 }
