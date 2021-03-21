@@ -29,13 +29,17 @@ function setup() {
 
 function moveServo() {
   console.log("Braço esquerdo: " + anguloEsquerdo);
-  anguloServoBracoDireito = anguloServoFromAnguloBraco(anguloEsquerdo);
-  console.log("Vou enviar: " + anguloServoBracoDireito);
+  anguloServoBracoDireito = anguloServoFromBracoEsquerdo(anguloEsquerdo);
+  anguloServoBracoEsquerdo = anguloServoFromBracoDireito(anguloDireito);
+  console.log("Vou enviar: " + anguloServoBracoEsquerdo);
   loadedJSON = loadJSON(
-"http://localhost:8080/bracos/60," + anguloServoBracoDireito, onURLload); 
+"http://localhost:8080/bracos/" 
+  + anguloServoBracoEsquerdo
+  + ","
+  + anguloServoBracoDireito, onURLload); 
 }
 
-function anguloServoFromAnguloBraco(anguloBraco) {
+function anguloServoFromBracoEsquerdo(anguloBraco) {
   MINIMO_BRACO = 90;
   MINIMO_SERVO = 15;
   MAXIMO_BRACO = 180;
@@ -44,6 +48,25 @@ function anguloServoFromAnguloBraco(anguloBraco) {
   anguloServo = 90;
   if (anguloBraco<0) anguloServo = 175;
   if (anguloBraco < 181 && anguloBraco > 90) {
+    novoAngulo = anguloBraco - MINIMO_BRACO;
+    novoMaximo = MAXIMO_BRACO - MINIMO_BRACO;
+    indiceNovoAngulo = novoAngulo / novoMaximo;
+    escalaDestino = MAXIMO_SERVO - MINIMO_SERVO;
+    novoAngulo = indiceNovoAngulo * escalaDestino + MINIMO_SERVO;
+    anguloServo = novoAngulo;
+  }
+  return Math.trunc(anguloServo);
+}
+
+function anguloServoFromBracoDireito(anguloBraco) {
+  MINIMO_BRACO = -90;
+  MINIMO_SERVO = 15;
+  MAXIMO_BRACO = 90;
+  MAXIMO_SERVO = 175;
+  
+  anguloServo = 15;
+  if (anguloBraco>90) anguloServo = 175;
+  if (anguloBraco < 90 && anguloBraco > -90) {
     novoAngulo = anguloBraco - MINIMO_BRACO;
     novoMaximo = MAXIMO_BRACO - MINIMO_BRACO;
     indiceNovoAngulo = novoAngulo / novoMaximo;
